@@ -17,8 +17,8 @@ const login = async (req,res) => {
     if(loginInstance) {
         if(loginInstance.password === hash(req.body.password)) {
             try {
-                const token = await jwt.sign({userID: loginInstance._id}, process.env.JWT_SECRET);
-                res.cookie("token", token).status(201).json({status: "OK", message: "Login credentials are correct. Cookie created"})
+                const token = await jwt.sign({userID: loginInstance._id, username: loginInstance.username}, process.env.JWT_SECRET);
+                res.cookie("token", token).status(201).json({status: "OK", message: "Login credentials are correct. Cookie created", userID: loginInstance._id})
             } catch(error) {
                 console.log(error.message);
             }
@@ -30,4 +30,24 @@ const login = async (req,res) => {
     }
 }
 
-module.exports = { register, login };
+const verifyLogin = async (req, res) => {
+    try {
+        const decodedToken = await jwt.verify(req.cookies.token , process.env.JWT_SECRET);
+        if(decodedToken.userID) {
+            const username = await UserModel.findOne({_id: decodedToken.userID});
+            res.json({status: "OK", message: "Cookie is present. Allow access to protected sites", username: username.username});
+        } else {
+            res.json({status: "Error", message: "User login cookie not found"});
+        }
+    } catch(error) {
+        console.log("Error: " + error);
+        res.json({status: "Error", message: "User login cookie not found"});
+    }
+}
+
+const logout = (req, res) => {
+    res.clearCookie("token");
+    res.json({status: "OK", message: "Cookie has been cleared"});
+}
+
+module.exports = { register, login, verifyLogin, logout };
