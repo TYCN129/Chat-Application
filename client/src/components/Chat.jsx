@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { AppContext } from '../App';
 import { json, useNavigate } from 'react-router-dom';
 import Avatar from './Avatar';
@@ -20,6 +20,8 @@ const Home = () => {
   const [messages, setMessages] = useState([]);
 
   const navigate = useNavigate();
+
+  const emptyDiv = useRef();
 
   const getAuth = async () => {
     try {
@@ -92,6 +94,13 @@ const Home = () => {
     setNewMessage("");
   }
 
+  useEffect(() => {
+    const div = emptyDiv.current;
+    if(div) {
+      div.scrollIntoView({behavior: 'smooth'});
+    }
+  }, [messages]);
+
   return (
     <div className='flex h-screen'>
       <div className='bg-blue-50 w-1/4 p'>
@@ -110,12 +119,16 @@ const Home = () => {
         {!selectedPersonID && <div className='flex h-full items-center justify-center'>
           <div className='text-gray-400 text-3xl'>&larr; Select a contact</div>
         </div>}
-        <div className='m-5 bg-blue-50 p-3 rounded-md'>
-          {!!selectedPersonID && messages.map(message => (message.to === selectedPersonID || message.from === selectedPersonID) && (
-            <div className={' ' + message.isOur ? 'justify-end' : ''}>
-              {message.text}
+        <div className='overflow-y-scroll flex-grow'>
+          {!!selectedPersonID && (
+            messages.map(message => (message.to === selectedPersonID || message.from === selectedPersonID) && (
+            <div className={(message.from === userID ? 'text-right' : 'text-left')}>
+              <div className={'text-left inline-block rounded-md py-2 px-3 m-2 ' + (message.from === userID ? 'bg-blue-500 text-white' : 'bg-white text-blue-600')}>
+                {message.text}
+              </div>
             </div>
-          ))}
+          )))}
+          <div ref={emptyDiv}></div>
         </div>
         {!!selectedPersonID && (
         <form onSubmit={sendMessage}>
