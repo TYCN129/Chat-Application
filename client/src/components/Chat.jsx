@@ -38,21 +38,7 @@ const Home = () => {
     }
   };
 
-  const initMessages = async () => {
-    console.log("user id is: " + userID);
-    const response = await axios.get('/loadChats', {
-      userID: userID
-    });
-
-    if(response.data.status === "OK") {
-      setMessages([...messages, response.data.messages.filter(message => (message.from === userID || message.to === userID))]);
-      console.log(messages);
-    }
-  }
-
-  useEffect(() => {
-    getAuth();
-
+  const connectToWs = () => {
     const ws = new WebSocket('ws://localhost:3001');
     setWs(ws);
 
@@ -61,25 +47,25 @@ const Home = () => {
       console.log(messageData);
       if('online' in messageData) {
         const dupPeople = messageData.online;
-        
-        // const people = dupPeople.reduce((accumulator, currentValue) => {
-        //   if (!accumulator.includes(currentValue)) {
-        //     accumulator.push(currentValue);
-        //   }
-        //   return accumulator;
-        // }, []);
-        
         setOnlinePeople(_.uniqBy(dupPeople, 'userID'));
-        console.log(dupPeople);
-        console.log(arrayUniq(dupPeople));
       } else {
         setMessages([...messages, {from: messageData.from, text: messageData.text, to: userID}]);
         console.log(messages);
       }
     });
 
-    initMessages();
-  }, [selectedPersonID]);
+    ws.addEventListener('close', () => {
+      setTimeout(() => {
+        console.log("Disconnected. Trying to reconnect...");
+        connectToWs();
+      })
+    }, 2000);
+  }
+
+  useEffect(() => {
+    getAuth();
+    connectToWs();
+  }, []);
 
   const sendMessage = (event) => {
     event.preventDefault();
@@ -100,6 +86,18 @@ const Home = () => {
       div.scrollIntoView({behavior: 'smooth'});
     }
   }, [messages]);
+
+  useEffect(() => {
+    try {
+      axios.get(`/messages/${selectedPersonID}`, {
+        ourUserID: userID
+      }).then((response) => {
+        setMessages(_.uniqBy(response.data, '_id'));
+      });
+    } catch(error) {
+      console.log(error);
+    }
+  }, [selectedPersonID])
 
   return (
     <div className='flex h-screen'>

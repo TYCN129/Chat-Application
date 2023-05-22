@@ -69,7 +69,7 @@ wsServer.on('connection', (connection, req) => {
             text: messageData.text,
             from: connection.userID,
             to: messageData.to,
-            id: newMessage._id
+            _id: newMessage._id
         })));
     });
 

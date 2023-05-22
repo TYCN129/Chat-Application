@@ -2,12 +2,12 @@ const express = require('express');
 const routes = express.Router();
 
 const { register, login, verifyLogin, logout } = require('./controllers/User');
-const { loadChats } = require('./controllers/Chat');
+const { loadMessages } = require('./controllers/Chat');
 
 routes.get('/', verifyLogin);
 routes.post('/register', register);
 routes.post('/login', login);
 routes.get('/logout', logout);
-routes.get('/loadChats', loadChats);
+routes.get('/messages/:userID', loadMessages);
 
 module.exports = {routes};
