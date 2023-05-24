@@ -18,7 +18,7 @@ const login = async (req,res) => {
         if(loginInstance.password === hash(req.body.password)) {
             try {
                 const token = await jwt.sign({userID: loginInstance._id, username: loginInstance.username}, process.env.JWT_SECRET);
-                res.cookie("token", token).status(201).json({status: "OK", message: "Login credentials are correct. Cookie created", userID: loginInstance._id});
+                res.cookie("token", token).status(201).json({status: "OK", message: "Login credentials are correct. Cookie created", userID: loginInstance._id, username: loginInstance.username});
             } catch(error) {
                 console.log(error.message);
             }

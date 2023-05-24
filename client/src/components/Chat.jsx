@@ -1,17 +1,13 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { AppContext } from '../App';
-import { json, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Avatar from './Avatar';
 import Logo from './Logo'
-import arrayUniq from 'array-uniq';
 import axios from 'axios';
 import _ from 'lodash';
 
 const Home = () => {
-  const {logout, loggedIn, setLoggedIn} = useContext(AppContext);
-
-  const [username, setUsername] = useState("");
-  const [userID, setUserID] = useState();
+  const {loggedIn, setLoggedIn, setUsername, setUserID, userID, username} = useContext(AppContext);
 
   const [onlinePeople, setOnlinePeople] = useState([]);
   const [ws, setWs] = useState(null);
@@ -27,9 +23,10 @@ const Home = () => {
     try {
       const response = await axios.get('/');
       if(response.data.status === "OK") {
-        setLoggedIn(true);
-        setUsername(response.data.username);
-        setUserID(response.data.userID);
+        console.log("Login status: OK");
+        // setLoggedIn(true);
+        // setUsername(response.data.username);
+        // setUserID(response.data.userID);
       } else {
         navigate('/login');
       }
@@ -45,11 +42,13 @@ const Home = () => {
     ws.addEventListener('message', (event) => {
       const messageData = JSON.parse(event.data);
       console.log(messageData);
+
       if('online' in messageData) {
         const dupPeople = messageData.online;
+        console.log(dupPeople);
         setOnlinePeople(_.uniqBy(dupPeople, 'userID'));
-      } else {
-        setMessages([...messages, {from: messageData.from, text: messageData.text, to: userID}]);
+      } else if('text' in messageData) {
+        setMessages(prev => [...prev, {from: messageData.from, text: messageData.text, to: userID}]);
         console.log(messages);
       }
     });
@@ -62,11 +61,6 @@ const Home = () => {
     }, 2000);
   }
 
-  useEffect(() => {
-    getAuth();
-    connectToWs();
-  }, []);
-
   const sendMessage = (event) => {
     event.preventDefault();
     
@@ -75,10 +69,29 @@ const Home = () => {
       to: selectedPersonID,
       from: userID
     }));
-
-    setMessages([...messages, {to: selectedPersonID, text: newMessage, from: userID}])
+    
+    setMessages(prev => [...prev, {to: selectedPersonID, text: newMessage, from: userID}]);
     setNewMessage("");
   }
+
+  const getMessages = async () => {
+    try {
+      const response = await axios.get(`/messages/${selectedPersonID}`, {
+        ourUserID: userID
+      });
+
+      setMessages(_.uniqBy(response.data, '_id'));
+    } catch(error) {
+      console.log(error);
+    }
+  };
+  
+  useEffect(() => {
+    if(!loggedIn) {
+      getAuth();
+    }
+    connectToWs();
+  }, []);
 
   useEffect(() => {
     const div = emptyDiv.current;
@@ -88,22 +101,14 @@ const Home = () => {
   }, [messages]);
 
   useEffect(() => {
-    try {
-      axios.get(`/messages/${selectedPersonID}`, {
-        ourUserID: userID
-      }).then((response) => {
-        setMessages(_.uniqBy(response.data, '_id'));
-      });
-    } catch(error) {
-      console.log(error);
-    }
+    // getMessages();
   }, [selectedPersonID])
 
   return (
     <div className='flex h-screen'>
       <div className='bg-blue-50 w-1/4 p'>
         <Logo />
-        {onlinePeople.map(person => username !== person.username && (
+        {onlinePeople.map(person => userID !== person.userID && (
           <div onClick={() => setSelectedPersonID(person.userID)} className={'flex items-center gap-2 cursor-pointer ' + (person.userID === selectedPersonID ? 'bg-blue-200' : '')}>
             {person.userID === selectedPersonID && <div className='w-1.5 bg-blue-500 h-12 rounded-r-lg'></div>}
             <div className='flex items-center gap-3 pl-3'>

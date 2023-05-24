@@ -9,20 +9,22 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const {setLoggedIn} = useContext(AppContext);
+  const {setLoggedIn, setUserID, setUsername} = useContext(AppContext);
 
   const login = async (event) => {
     event.preventDefault();
     console.log("Calling login");
+
     try{
       const response = await axios.post('/login', {
         username: inputUsername,
         password: password
       });
-
       if(response.data.status === "OK") {
         console.log("Logged in successfully");
         setLoggedIn(true);
+        setUsername(response.data.username);
+        setUserID(response.data.userID);
         navigate('/home');
       } else {
         alert("Incorrect Password");

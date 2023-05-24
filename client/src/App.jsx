@@ -13,6 +13,8 @@ const App = () => {
   axios.defaults.withCredentials = true;
 
   const [loggedIn, setLoggedIn] = useState(false);
+  const [username, setUsername] = useState("");
+  const [userID, setUserID] = useState();
 
   const logout = async () => {
     try {
@@ -26,7 +28,7 @@ const App = () => {
   }
 
   return (
-    <AppContext.Provider value={{setLoggedIn, loggedIn, logout}}>
+    <AppContext.Provider value={{setLoggedIn, loggedIn, logout, setUsername, setUserID}}>
     <div className='App'>
       <Router>
 
