@@ -14,18 +14,22 @@ const Login = () => {
   const login = async (event) => {
     event.preventDefault();
     console.log("Calling login");
-    const response = await axios.post('/login', {
-      username: inputUsername,
-      password: password
-    });
+    try{
+      const response = await axios.post('/login', {
+        username: inputUsername,
+        password: password
+      });
 
-    if(response.data.status === "OK") {
-      console.log("Logged in successfully");
-      setLoggedIn(true);
-      navigate('/home');
-    } else {
-      alert("Incorrect Password");
-      setPassword("");
+      if(response.data.status === "OK") {
+        console.log("Logged in successfully");
+        setLoggedIn(true);
+        navigate('/home');
+      } else {
+        alert("Incorrect Password");
+        setPassword("");
+      }
+    } catch(error) {
+      console.log(error);
     }
   }
 
