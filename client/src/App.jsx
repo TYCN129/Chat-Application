@@ -14,7 +14,7 @@ const App = () => {
 
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
-  const [userID, setUserID] = useState();
+  const [userID, setUserID] = useState("");
 
   const logout = async () => {
     try {
@@ -28,7 +28,7 @@ const App = () => {
   }
 
   return (
-    <AppContext.Provider value={{setLoggedIn, loggedIn, logout, setUsername, setUserID}}>
+    <AppContext.Provider value={{setLoggedIn, loggedIn, logout, setUsername, setUserID, userID, username}}>
     <div className='App'>
       <Router>
 

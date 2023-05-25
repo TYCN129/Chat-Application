@@ -20,6 +20,7 @@ const Login = () => {
         username: inputUsername,
         password: password
       });
+      console.log(response.data);
       if(response.data.status === "OK") {
         console.log("Logged in successfully");
         setLoggedIn(true);

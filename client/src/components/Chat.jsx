@@ -11,7 +11,7 @@ const Home = () => {
 
   const [onlinePeople, setOnlinePeople] = useState([]);
   const [ws, setWs] = useState(null);
-  const [selectedPersonID, setSelectedPersonID] = useState();
+  const [selectedPersonID, setSelectedPersonID] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState([]);
 
@@ -24,9 +24,6 @@ const Home = () => {
       const response = await axios.get('/');
       if(response.data.status === "OK") {
         console.log("Login status: OK");
-        // setLoggedIn(true);
-        // setUsername(response.data.username);
-        // setUserID(response.data.userID);
       } else {
         navigate('/login');
       }
@@ -76,11 +73,9 @@ const Home = () => {
 
   const getMessages = async () => {
     try {
-      const response = await axios.get(`/messages/${selectedPersonID}`, {
-        ourUserID: userID
-      });
+      const response = await axios.get(`/messages/${selectedPersonID}`);
 
-      setMessages(_.uniqBy(response.data, '_id'));
+      setMessages(_.uniqBy(response.data.messages, '_id'));
     } catch(error) {
       console.log(error);
     }
@@ -101,7 +96,9 @@ const Home = () => {
   }, [messages]);
 
   useEffect(() => {
-    // getMessages();
+    if(selectedPersonID !== null) {
+      getMessages();
+    }
   }, [selectedPersonID])
 
   return (

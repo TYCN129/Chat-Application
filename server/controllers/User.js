@@ -34,8 +34,7 @@ const verifyLogin = async (req, res) => {
     try {
         const decodedToken = await jwt.verify(req.cookies.token , process.env.JWT_SECRET);
         if(decodedToken.userID) {
-            const username = await UserModel.findOne({_id: decodedToken.userID});
-            res.json({status: "OK", message: "Cookie is present. Allow access to protected sites", username: username.username});
+            res.json({status: "OK", message: "Cookie is present. Allow access to protected sites", username: decodedToken.username, userID: decodedToken.userID});
         } else {
             res.json({status: "Error", message: "User login cookie not found"});
         }
