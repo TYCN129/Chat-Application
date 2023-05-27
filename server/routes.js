@@ -7,7 +7,7 @@ const { loadMessages } = require('./controllers/Chat');
 routes.get('/', verifyLogin);
 routes.post('/register', register);
 routes.post('/login', login);
-routes.get('/logout', logout);
+routes.post('/logout', logout);
 routes.get('/messages/:userID', loadMessages);
 
 module.exports = {routes};

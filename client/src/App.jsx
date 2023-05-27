@@ -1,6 +1,6 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useState } from 'react';
 import Register from './components/Register';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/Login';
 import axios from 'axios';
 import Home from './components/Chat';
@@ -16,19 +16,19 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [userID, setUserID] = useState("");
 
-  const logout = async () => {
-    try {
-      const response = await axios.get('/logout');
-      if(response.data.status === "OK") {
-        setLoggedIn(false);
-      }
-    } catch(error) {
-      console.log(error);
-    }
-  }
+  // const logout = async () => {
+  //   try {
+  //     const response = await axios.get('/logout');
+  //     if(response.data.status === "OK") {
+  //       setLoggedIn(false);
+  //     }
+  //   } catch(error) {
+  //     console.log(error);
+  //   }
+  // }
 
   return (
-    <AppContext.Provider value={{setLoggedIn, loggedIn, logout, setUsername, setUserID, userID, username}}>
+    <AppContext.Provider value={{setLoggedIn, loggedIn, setUsername, setUserID, userID, username}}>
     <div className='App'>
       <Router>
 

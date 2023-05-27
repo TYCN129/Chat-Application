@@ -38,7 +38,7 @@ const Register = () => {
             <input value={password} type='password' placeholder='Password' className='block w-full p-3 mb-3 border' onChange={(event) => {setPassword(event.target.value)}}/>
             <input value={confirmPassword} type='password' placeholder='Confirm Password' className='block w-full p-3 mb-3 border' onChange={(event) => {setConfirmPassword(event.target.value)}}/>
             {(password !==  confirmPassword) && <p className='text-red-400 mb-3 text-center'>Passwords do not match</p>}
-            <button className='bg-blue-500 w-full text-white block rounded-md p-3'>Register</button>
+            <button className='bg-blue-500 w-full text-white block rounded-md p-3 border-3 border-blue-500 transition duration-100 hover:font-semibold hover:bg-white hover:text-blue-500 hover:border hover:border-blue-500'>Register</button>
             <Link to='/login'> <p className='text-center mt-3 text-blue-800'>Already have an account? Login here</p> </Link>
         </form>
     </div>

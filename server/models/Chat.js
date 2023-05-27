@@ -12,9 +12,11 @@ const ChatSchema = new mongoose.Schema({
         null: false
     },
     text: {
-        type: String,
-        null: false
+        type: String
     },
+    file: {
+        type: Object
+    }
 },{timestamps: true});
 
 const ChatModel = mongoose.model('Chat', ChatSchema);

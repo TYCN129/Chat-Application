@@ -45,8 +45,7 @@ const verifyLogin = async (req, res) => {
 }
 
 const logout = (req, res) => {
-    res.clearCookie("token");
-    res.json({status: "OK", message: "Cookie has been cleared"});
+    res.cookie('token', '').json({status: "OK", message: "User has logged out successfully"});
 }
 
 module.exports = { register, login, verifyLogin, logout };

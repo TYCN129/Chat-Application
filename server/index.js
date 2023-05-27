@@ -14,8 +14,8 @@ const { ChatModel } = require('./models/Chat');
 
 const { routes } = require('./routes');
 
-const mongoURL = "mongodb://localhost:27017/chat-app-DB";
-// const mongoURL = process.env.MONGO_URL;
+// const mongoURL = "mongodb://localhost:27017/chat-app-DB";
+const mongoURL = process.env.MONGO_URL;
 mongoose.connect(mongoURL).then(() => console.log("Successfully connected to the database"));
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -38,42 +38,78 @@ const wsServer = new ws.WebSocketServer({server: server});
 wsServer.on('connection', (connection, req) => {
     console.log("A new client has been connected to the server!");
 
-    const token = req.headers.cookie.split(';').find(str => str.startsWith('token=')).split('=')[1];
-    if(token) {
-        jwt.verify(token, process.env.JWT_SECRET, (err, userData) => {
-            if(err) throw err;
-            else {
-                connection.username = userData.username;
-                connection.userID = userData.userID;
-            }
-        })
+    const notifyOnlinePeople = () => {
+        [...wsServer.clients].forEach(client => {
+            client.send(JSON.stringify({
+                online: [...wsServer.clients].map(c => ({userID: c.userID, username: c.username}))
+            }));
+        });
     }
 
-    [...wsServer.clients].forEach(client => {
-        client.send(JSON.stringify({
-            online: [...wsServer.clients].map(c => ({userID: c.userID, username: c.username}))
-        }));
-    });
+    connection.isAlive = true;
+
+    connection.pingTimer = setInterval(() => {
+        connection.ping();
+        connection.deathTimer = setTimeout(() => {
+            connection.isAlive = false;
+            clearInterval(connection.pingTimer);
+            connection.terminate();
+            notifyOnlinePeople();
+        }, 2000);
+    }, 5000)
+
+    connection.on('pong', () => {
+        clearTimeout(connection.deathTimer);
+    })
+
+    const cookie = req.headers.cookie;
+    if(cookie) {
+        const partitions = cookie.split(';');
+        if(partitions) {
+            const tokenString = partitions.find(str => str.startsWith('token='));
+            if(tokenString) {
+                const token = tokenString.split('=')[1];
+                if(token) {
+                    jwt.verify(token, process.env.JWT_SECRET, (err, userData) => {
+                        if(err) throw err;
+                        else {
+                            connection.username = userData.username;
+                            connection.userID = userData.userID;
+                        }
+                    })
+                }
+            }
+        }
+    }
+
+    notifyOnlinePeople();
 
     connection.on('message', async (message) => {
         const messageData = JSON.parse(message);
-        console.log("A message has been received from the client: " + messageData.text);
-
-        const newMessage = await ChatModel.create({
-            from: connection.userID,
-            to: messageData.to,
-            text: messageData.text
-        });
-
-        [...wsServer.clients].filter(client => client.userID === messageData.to).forEach(client => client.send(JSON.stringify({
-            text: messageData.text,
-            from: connection.userID,
-            to: messageData.to,
-            _id: newMessage._id
-        })));
+        if(messageData.text) {
+            console.log("A message has been received from the client: " + messageData.text);
+            
+            const newMessage = await ChatModel.create({
+                from: connection.userID,
+                to: messageData.to,
+                text: messageData.text,
+            });
+            
+            [...wsServer.clients].filter(client => client.userID === messageData.to).forEach(client => client.send(JSON.stringify({
+                text: messageData.text,
+                from: connection.userID,
+                to: messageData.to,
+                _id: newMessage._id
+            })));
+        }
     });
 
     connection.on('close', () => {
         console.log("Client disconnected from the server");
+        notifyOnlinePeople();
     })
 });
+
+wsServer.on('close', () => {
+    console.log('Closed');
+})
