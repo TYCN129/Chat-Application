@@ -147,28 +147,28 @@ const Home = () => {
 
   return (
     <div className='flex h-screen'>
-      <div className='bg-blue-700 w-1/4 flex flex-col text-white'>
+      <div className='bg-gradient-to-br to-blue-500 from-black via-blue-900 animate-gradient-x w-1/4 flex flex-col text-white'>
         <div className='flex-grow'>
           <div className='mx-auto'>
             <Logo />
           </div>
           <div className='overflow-y-scroll'>
             {onlinePeople.map(person => userID !== person.userID && (
-              <div onClick={() => setSelectedPersonID(person.userID)} className={'flex items-center gap-2 cursor-pointer ' + (person.userID === selectedPersonID ? 'bg-blue-800' : '')}>
-                {person.userID === selectedPersonID && <div className='w-1.5 bg-white h-12 rounded-r-lg'></div>}
+              <div onClick={() => setSelectedPersonID(person.userID)} className={'border-b border-gray-200 flex items-center gap-2 cursor-pointer ' + (person.userID === selectedPersonID ? 'bg-blue-800' : '')}>
+                {person.userID === selectedPersonID && <div className='w-1 bg-white h-12 rounded-r-lg'></div>}
                 <div className='flex items-center gap-3 pl-3'>
                   <Avatar username={person.username} userID={person.userID} />
-                  <div className='border-b border-gray-200 py-3'>{person.username}</div>
+                  <div className='py-3'>{person.username}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
         <div className='w-3/4 mb-5 mx-auto'>
-          <button onClick={logout} className='bg-blue-800 w-full text-white block rounded-md p-3 border border-white transition duration-200 hover:font-semibold hover:bg-white hover:text-blue-600 hover:border hover:border-blue-500'>Logout</button>
+          <button onClick={logout} className='bg-blue-800 w-full text-white block rounded-md p-2 border border-white transition duration-200 hover:font-semibold hover:bg-white hover:text-blue-600 hover:border hover:border-blue-500'>Logout</button>
         </div>
       </div>
-      <div className='bg-blue-50 flex flex-col w-3/4 px-2'>
+      <div className='bg-gradient-to-br from-blue-300 to-blue-100 via-blue-200 animate-gradient-x flex flex-col w-3/4 px-2'>
         {!selectedPersonID && <div className='flex h-full items-center justify-center'>
           <div className='text-gray-400 text-3xl'>&larr; Select a contact</div>
         </div>}
