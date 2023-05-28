@@ -168,7 +168,7 @@ const Home = () => {
           <button onClick={logout} className='bg-blue-800 w-full text-white block rounded-md p-2 border border-white transition duration-200 hover:font-semibold hover:bg-white hover:text-blue-600 hover:border hover:border-blue-500'>Logout</button>
         </div>
       </div>
-      <div className='bg-gradient-to-br from-blue-300 to-blue-100 via-blue-200 animate-gradient-x flex flex-col w-3/4 px-2'>
+      <div className='bg-gradient-to-br from-blue-400 to-blue-200 via-blue-300 animate-gradient-x flex flex-col w-3/4 px-2'>
         {!selectedPersonID && <div className='flex h-full items-center justify-center'>
           <div className='text-gray-400 text-3xl'>&larr; Select a contact</div>
         </div>}

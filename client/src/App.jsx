@@ -1,11 +1,11 @@
 import React, { createContext, useState } from 'react';
 import Register from './components/Register';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import axios from 'axios';
 import Home from './components/Chat';
 
-export const backend = `http://localhost:3001`;
+export const backend = `https://chat-backend-2ce0.onrender.com`;
 export const AppContext = createContext();
 
 const App = () => {
@@ -33,6 +33,7 @@ const App = () => {
       <Router>
 
         <Routes>
+          <Route path='/' element={<Navigate to='/login' />} />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/home' element={<Home />} />
