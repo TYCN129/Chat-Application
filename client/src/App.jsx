@@ -5,7 +5,7 @@ import Login from './components/Login';
 import axios from 'axios';
 import Home from './components/Chat';
 
-export const backend = `https://chat-backend-2ce0.onrender.com:3001`;
+export const backend = `https://chat-backend-2ce0.onrender.com`;
 export const AppContext = createContext();
 
 const App = () => {
