@@ -25,7 +25,7 @@ app.use(cors({
     origin: [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "https://chat-frontend-7ujq.onrender.com"
+        "https://chat-frontend-7ujq.onrender.com:3000"
     ],
     credentials: true
 }));
