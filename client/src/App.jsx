@@ -5,7 +5,7 @@ import Login from './components/Login';
 import axios from 'axios';
 import Home from './components/Chat';
 
-export const backend = `https://chat-backend-2ce0.onrender.com`;
+export const backend = `http://localhost:3001`;
 export const AppContext = createContext();
 
 const App = () => {
@@ -15,17 +15,6 @@ const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [userID, setUserID] = useState("");
-
-  // const logout = async () => {
-  //   try {
-  //     const response = await axios.get('/logout');
-  //     if(response.data.status === "OK") {
-  //       setLoggedIn(false);
-  //     }
-  //   } catch(error) {
-  //     console.log(error);
-  //   }
-  // }
 
   return (
     <AppContext.Provider value={{setLoggedIn, loggedIn, setUsername, setUserID, userID, username}}>

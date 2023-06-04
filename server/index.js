@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const ws = require('ws');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
 mongoose.set("strictQuery", true);
 
 const { UserModel } = require('./models/User');
@@ -24,12 +25,12 @@ app.use(cookieParser());
 app.use(cors({
     origin: [
         "http://localhost:3000",
-        "http://127.0.0.1:3000",
         "https://chat-frontend-7ujq.onrender.com"
     ],
     credentials: true
 }));
 app.use('/',routes);
+app.use('/uploads', express.static(__dirname + '/uploads'));
 
 
 const server = app.listen(3001, () => console.log("Server started listening to port 3001"));
@@ -93,11 +94,45 @@ wsServer.on('connection', (connection, req) => {
             const newMessage = await ChatModel.create({
                 from: connection.userID,
                 to: messageData.to,
-                text: messageData.text,
+                text: messageData.text
             });
             
             [...wsServer.clients].filter(client => client.userID === messageData.to).forEach(client => client.send(JSON.stringify({
                 text: messageData.text,
+                from: connection.userID,
+                to: messageData.to,
+                _id: newMessage._id
+            })));
+        } else if(messageData.file) {
+            console.log("A file has been received from the client. Filename: " + messageData.file.filename);
+
+            const parts = messageData.file.filename.split('.');
+            const ext = parts[parts.length - 1];
+            const filename = Date.now() + '.' + ext;
+            const path = __dirname + '/uploads/' + filename;
+            const bufferData = new Buffer(messageData.file.data.split(',')[1], 'base64');
+            fs.writeFile(path, bufferData, (error) => {
+                if(error) {
+                    console.log(error);
+                } else {
+                    console.log("File has been received with filename: " + messageData.file.filename);
+                }
+            });
+
+            const newMessage = await ChatModel.create({
+                from: connection.userID,
+                to: messageData.to,
+                file: {
+                    name: messageData.file.filename,
+                    pathname: filename
+                }
+            });
+
+            [...wsServer.clients].filter(client => client.userID === messageData.to).forEach(client => client.send(JSON.stringify({
+                file: {
+                    name: messageData.file.filename,
+                    pathname: filename
+                },
                 from: connection.userID,
                 to: messageData.to,
                 _id: newMessage._id
