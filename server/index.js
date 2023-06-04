@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(cors({
     origin: [
         "http://localhost:3000",
-        "https://chat-frontend-7ujq.onrender.com"
+        "http://192.168.1.33:3000"
     ],
     credentials: true
 }));
