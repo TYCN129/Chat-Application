@@ -7,7 +7,8 @@ import Home from './components/Chat';
 
 // export const backend = 'http://localhost:3001';
 // export const backend = 'http://20.205.5.37:3001';   // azure vm for backend
-export const backend = 'http://172.31.44.222:3001';   // azure vm for backend
+// export const backend = 'http://172.31.44.222:3001';   // azure vm for backend
+export const backend = 'https://talkbox-server.onrender.com';   // azure vm for backend
 export const AppContext = createContext();
 
 const App = () => {
